@@ -1,15 +1,10 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import DashboardBox from "../../components/DashboardBox";
 import DashboardBoxHeader from "../../components/DashboardBoxHeader";
 import { useGetKpisQuery, useGetProductsQuery } from "../../state/api";
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
-  Legend,
   Line,
   LineChart,
   Pie,
