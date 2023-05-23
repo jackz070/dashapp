@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+html,
+body,
+#root,
+.app {
+  height: 100%;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  background-color: white;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar {
+  width: 10px;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-track {
+  background: #6b6d74;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-thumb {
+  background: #0b8f78;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-track:hover {
+  background: #48494e;
+}
