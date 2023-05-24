@@ -64,29 +64,21 @@ const Dashboard = () => {
   const isAboveMediumScreenWidth = useMediaQuery("(min-width: 1200px)");
   const MotionBox = motion(Box, { forwardMotionProps: true });
   // Fetching state, pass setter to children, default true, when fetched set as false - if no falses, render page
-  const [dashboardDataFetched, setDashboardDataFetched] = useState(true);
+  const [dashboardDataFetched, setDashboardDataFetched] = useState(false);
   const initialDataLoadKpi = useGetKpisQuery();
   const initialDataLoadTransactions = useGetTransactionsQuery();
   const initialDataLoadProducts = useGetProductsQuery();
-  console.log(initialDataLoadKpi.isFetching);
+
+  const dataFetching =
+    initialDataLoadKpi.isFetching &&
+    initialDataLoadTransactions.isFetching &&
+    initialDataLoadProducts.isFetching;
+
   useEffect(() => {
-    if (
-      dashboardDataFetched &&
-      initialDataLoadKpi.isFetching &&
-      initialDataLoadTransactions.isFetching &&
-      initialDataLoadProducts.isFetching
-    ) {
-      setDashboardDataFetched(false);
-      setTimeout(() => {
-        setDashboardDataFetched(true);
-      }, 1700);
+    if (!dataFetching) {
+      setDashboardDataFetched(true);
     }
-  }, [
-    dashboardDataFetched,
-    initialDataLoadKpi,
-    initialDataLoadTransactions,
-    initialDataLoadProducts,
-  ]);
+  }, [dataFetching]);
 
   if (!dashboardDataFetched) {
     return <FullPageLoading text="preparing your data" />;

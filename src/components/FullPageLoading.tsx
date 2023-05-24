@@ -7,6 +7,7 @@ type Props = { text: string };
 
 const FullPageLoading = ({ text }: Props) => {
   const MotionBox = motion(Box, { forwardMotionProps: true });
+
   return (
     <MotionBox
       width="100%"
