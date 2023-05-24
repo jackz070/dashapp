@@ -7,6 +7,7 @@ import Navbar from "./pages/navbar/Navbar";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
+import DashboardTransitionWrapper from "./pages/dashboard/DashboardTransitionWrapper";
 
 function LocationProvider({ children }: { children: ReactNode }) {
   return <AnimatePresence>{children}</AnimatePresence>;
@@ -18,8 +19,15 @@ function RoutesWithAnimation() {
   return (
     <AnimatePresence initial={false} mode="popLayout">
       <Routes location={location} key={location.key}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/predictions" element={<Settings />} />
+        <Route
+          path="/"
+          element={
+            <DashboardTransitionWrapper>
+              <Dashboard />
+            </DashboardTransitionWrapper>
+          }
+        />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </AnimatePresence>
   );

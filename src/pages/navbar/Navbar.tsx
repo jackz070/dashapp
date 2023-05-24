@@ -32,7 +32,7 @@ const Navbar = () => {
         </Box>
         <Box sx={{ "&:hover": { color: palette.primary[600] } }}>
           <Link
-            to="/predictions"
+            to="/settings"
             onClick={() => setSelected("predictions")}
             style={{
               color: selected === "predictions" ? palette.grey[900] : "inherit",

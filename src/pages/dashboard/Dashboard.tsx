@@ -2,8 +2,17 @@ import { Box, useMediaQuery } from "@mui/material";
 import Row1 from "./Row1";
 import Row2 from "./Row2";
 import Row3 from "./Row3";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { dashboardVariants } from "../../MotionVariants";
+import { useEffect, useState } from "react";
+import {
+  useGetKpisQuery,
+  useGetProductsQuery,
+  useGetTransactionsQuery,
+} from "../../state/api";
+import { useGridEditing } from "@mui/x-data-grid/internals";
+import FullPageLoading from "../../components/FullPageLoading";
+import DashboardTransitionWrapper from "./DashboardTransitionWrapper";
 
 const gridTemplateLargeScreen = `
 "a b c"
@@ -54,12 +63,36 @@ const gridTemplateSmallScreens = `
 const Dashboard = () => {
   const isAboveMediumScreenWidth = useMediaQuery("(min-width: 1200px)");
   const MotionBox = motion(Box, { forwardMotionProps: true });
+  // Fetching state, pass setter to children, default true, when fetched set as false - if no falses, render page
+  const [dashboardDataFetched, setDashboardDataFetched] = useState(true);
+  const initialDataLoadKpi = useGetKpisQuery();
+  const initialDataLoadTransactions = useGetTransactionsQuery();
+  const initialDataLoadProducts = useGetProductsQuery();
+
+  useEffect(() => {
+    if (
+      dashboardDataFetched &&
+      initialDataLoadKpi.isFetching &&
+      initialDataLoadTransactions.isFetching &&
+      initialDataLoadProducts.isFetching
+    ) {
+      setDashboardDataFetched(false);
+      setTimeout(() => {
+        setDashboardDataFetched(true);
+      }, 1700);
+    }
+  }, [
+    dashboardDataFetched,
+    initialDataLoadKpi,
+    initialDataLoadTransactions,
+    initialDataLoadProducts,
+  ]);
+
+  if (!dashboardDataFetched) {
+    return <FullPageLoading text="preparing your data" />;
+  }
   return (
-    <MotionBox
-      variants={dashboardVariants}
-      initial="initial"
-      animate="final"
-      exit="exit"
+    <Box
       width="100%"
       height="100%"
       display="grid"
@@ -81,7 +114,7 @@ const Dashboard = () => {
       <Row1 />
       <Row2 />
       <Row3 />
-    </MotionBox>
+    </Box>
   );
 };
 
