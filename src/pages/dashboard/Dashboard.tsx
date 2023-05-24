@@ -68,7 +68,7 @@ const Dashboard = () => {
   const initialDataLoadKpi = useGetKpisQuery();
   const initialDataLoadTransactions = useGetTransactionsQuery();
   const initialDataLoadProducts = useGetProductsQuery();
-
+  console.log(initialDataLoadKpi.isFetching);
   useEffect(() => {
     if (
       dashboardDataFetched &&
