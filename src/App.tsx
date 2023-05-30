@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { themeSettings } from "./theme";
 import { Box, CssBaseline, ThemeOptions } from "@mui/material";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
@@ -8,6 +8,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
 import DashboardTransitionWrapper from "./pages/dashboard/DashboardTransitionWrapper";
+import ItemsPage from "./pages/items/ItemsPage";
 
 function LocationProvider({ children }: { children: ReactNode }) {
   return <AnimatePresence>{children}</AnimatePresence>;
@@ -17,17 +18,18 @@ function RoutesWithAnimation() {
   const location = useLocation();
 
   return (
-    <AnimatePresence initial={false} mode="popLayout">
+    <AnimatePresence initial={false} mode="wait">
       <Routes location={location} key={location.key}>
         <Route
           path="/"
           element={
             <DashboardTransitionWrapper>
-              <Dashboard />
+              <Dashboard location={location} />
             </DashboardTransitionWrapper>
           }
         />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/items" element={<ItemsPage />} />
       </Routes>
     </AnimatePresence>
   );

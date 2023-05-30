@@ -38,6 +38,7 @@ export const tokens = {
     // red
     500: "#ef5301",
   },
+  basic: { white: "#ffffff", black: "#000000" },
   background: {
     light: "#232629",
     main: "#0f0f10",
@@ -59,6 +60,7 @@ export const themeSettings = {
     tertiary: {
       ...tokens.tertiary,
     },
+    basic: { ...tokens.basic },
     grey: {
       ...tokens.grey,
       main: tokens.grey[500],
@@ -118,7 +120,18 @@ export const themeSettings = {
             },
           },
         },
-
+        {
+          props: { variant: "filled_primary", color: "reverse" },
+          style: {
+            color: tokens.basic.black,
+            backgroundColor: tokens.basic.white,
+            fontSize: ".8rem",
+            "&:hover": {
+              backgroundColor: tokens.grey[200],
+              boxShadow: "0px 3px 5px -1px rgba(0,0,0,0.1)",
+            },
+          },
+        },
         {
           props: { variant: "outlined_primary" },
           style: {
@@ -148,6 +161,25 @@ export const themeSettings = {
           },
         },
       ],
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          // this is styles for the new variants
+          "&.subvariant-hovered": {
+            "& .MuiFormLabel-root": { color: "white" },
+            "& fieldset": {
+              border: "none",
+            },
+            "& .MuiInputBase-input:hover + fieldset": {
+              border: `2px solid blue`,
+            },
+            "& .MuiInputBase-input:focus + fieldset": {
+              border: `2px solid blue`,
+            },
+          },
+        },
+      },
     },
   },
 };

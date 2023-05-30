@@ -58,3 +58,14 @@ export interface GetTransactionsResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface GetItemsResponse {
+  _id: string;
+  __v: number;
+  name: string;
+  price: number;
+  category: "soft" | "medium" | "hard";
+  stock?: number;
+  createdAt: string;
+  updatedAt: string;
+}

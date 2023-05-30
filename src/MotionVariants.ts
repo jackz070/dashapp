@@ -37,3 +37,23 @@ export const dashboardVariants = {
     },
   },
 };
+
+export const itemsVariants = {
+  initial: {
+    y: "-100vh",
+  },
+  final: {
+    y: "0vh",
+    transition: {
+      duration: 0.7,
+      ease: "easeIn",
+    },
+  },
+  exit: {
+    y: "100vw",
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+    },
+  },
+};

@@ -13,10 +13,15 @@ import { TypographyPropsVariantOverrides } from "@mui/material/Typography/Typogr
 
 declare module "@mui/material/styles/createPalette" {
   interface PaletteColor {
-    [key: number]: string;
+    [key: number | string]: string;
+  }
+  interface TypeBackground {
+    light: string;
+    dark: string;
   }
   interface Palette {
     tertiary: PaletteColor;
+    basic: PaletteColor;
   }
 }
 
@@ -27,11 +32,18 @@ declare module "@mui/material" {
   }
   interface ButtonPropsColorOverrides {
     error: true;
+    reverse: true;
   }
 }
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     link: true;
+  }
+}
+
+declare module "@mui/material/TextField" {
+  interface TextFieldPropsVariantOverrides {
+    custom_light: true;
   }
 }
