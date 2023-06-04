@@ -1,28 +1,18 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { useAddItemMutation } from "../../state/api";
 import {
   Box,
   Button,
-  FormControl,
-  Input,
-  InputLabel,
   MenuItem,
   TextField,
   useTheme,
-  Select,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { toast } from "react-toastify";
 import { GetItemsResponse } from "../../state/types";
+import { useNotification } from "../../hooks/useNotification";
 
 const ItemCreate = () => {
   const { palette } = useTheme();
@@ -45,6 +35,7 @@ const ItemCreate = () => {
       // padding: ".5rem .75rem",
       color: "white",
     },
+    "& .MuiInputBase-root": { minWidth: "200px" },
 
     ":before": { borderBottomColor: palette.basic.white },
     ":after": { borderBottomColor: palette.grey[500] },
@@ -72,6 +63,8 @@ const ItemCreate = () => {
     "& .MuiSelect-iconOutlined": { fill: palette.basic.white },
   };
 
+  // Form & state utilities
+
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setName(e.target.value);
@@ -80,105 +73,38 @@ const ItemCreate = () => {
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const value = e.target.value;
-    if (parseInt(value) >= 0) setPrice(value);
+    setPrice(value);
   };
 
   const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const value = e.target.value;
-    if (parseInt(value) >= 0) setStock(value);
+    setStock(value);
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setCategory(e.target.value);
+    setCategory(e.target.value as "" | "soft" | "medium" | "hard");
   };
 
-  const toastId = useRef<string | number>();
-
-  const initialNotification = () =>
-    (toastId.current = toast("Adding new item...", {
-      position: "bottom-right",
-      autoClose: false,
-    }));
-
-  const updateNotification = () => {
-    if (toastId.current) {
-      if (createMutationState.isSuccess) {
-        toast.update(toastId.current, {
-          render: "New item added.",
-          type: toast.TYPE.SUCCESS,
-          autoClose: 5000,
-        });
-        return;
-      }
-      if (createMutationState.isError) {
-        console.log(createMutationState);
-
-        if (
-          createMutationState.status === "rejected" &&
-          createMutationState.error?.status === "FETCH_ERROR"
-        ) {
-          toast.update(toastId.current, {
-            render: () =>
-              `There is a problem with our server. Details: ${createMutationState.error.error}`,
-            type: toast.TYPE.ERROR,
-            autoClose: 5000,
-          });
-          return;
-        }
-        toast.update(toastId.current, {
-          render: () => `${createMutationState.error.data.message}`,
-          type: toast.TYPE.ERROR,
-          autoClose: 5000,
-        });
-      }
-    }
-  };
-
-  useEffect(() => {
-    updateNotification();
-    if (createMutationState.isSuccess) handleClose();
-  }, [createMutationState]);
-
-  const handleItemCreate = (e: FormEvent) => {
-    e.preventDefault();
-
+  const validate = () => {
     if (name.length === 0) {
       setNameError("required");
     }
     if (category.length === 0) {
       setCategoryError("required");
     }
-    if (parseInt(price) === 0) {
-      setPriceError("can't be zero");
+    if (!price) {
+      setPriceError("required");
+    }
+    if (parseFloat(price) <= 0) {
+      setPriceError("must be bigger than zero");
+    }
+    if (!stock) {
+      setStockError("required");
     }
     if (parseInt(stock) === 0) {
-      setStockError("can't be zero");
-    }
-    if (nameError || categoryError || priceError || stockError) {
-      return;
-    }
-    initialNotification();
-    const newItemData: Partial<GetItemsResponse> = {
-      name: name,
-      price: parseInt(price) * 100,
-      category: category,
-      stock: parseInt(stock),
-    };
-    try {
-      createTrigger(newItemData)
-        .unwrap()
-        .then((fulfilled) => {
-          console.log(fulfilled);
-        })
-        .catch((rejected) => console.error(rejected));
-    } catch (err) {
-      let message = "Unkown error";
-      if (err instanceof Error) {
-        message = err.message;
-      }
-      console.error(message);
+      setStockError("must be positive integer");
     }
   };
 
@@ -209,13 +135,64 @@ const ItemCreate = () => {
     if (name.length > 0) {
       setNameError("");
     }
-    if (parseInt(price) > 0) {
+    if (parseFloat(price) > 0) {
       setPriceError("");
     }
     if (parseInt(stock) > 0) {
       setStockError("");
     }
   }, [name, category, price, stock]);
+
+  // Notifications
+
+  const { initialNotification } = useNotification(
+    createMutationState.isSuccess,
+    createMutationState.isError,
+    createMutationState.status,
+    createMutationState.error,
+    createMutationState.endpointName
+  );
+
+  useEffect(() => {
+    if (createMutationState.isSuccess) handleClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createMutationState]);
+
+  // Create item
+
+  const handleItemCreate = (e: FormEvent) => {
+    e.preventDefault();
+    if (
+      nameError ||
+      categoryError ||
+      priceError ||
+      stockError ||
+      !name ||
+      !price ||
+      !category ||
+      !stock
+    ) {
+      return;
+    }
+    initialNotification();
+    const newItemData: Partial<GetItemsResponse> = {
+      name: name,
+      price: parseFloat(price) * 100,
+      category: category,
+      stock: parseInt(stock),
+    };
+    try {
+      createTrigger(newItemData)
+        .unwrap()
+        .catch((rejected) => console.error(rejected));
+    } catch (err) {
+      let message = "Unkown error";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      console.error(message);
+    }
+  };
 
   return (
     <Box>
@@ -239,10 +216,10 @@ const ItemCreate = () => {
             },
           }}
         >
-          <DialogTitle variant="h4" sx={{ padding: "1.5rem 2rem" }}>
+          <DialogTitle variant="h3" sx={{ padding: "1.75rem 2rem" }}>
             Add new item
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ maxWidth: "31rem" }}>
             <Box
               component="form"
               sx={{
@@ -250,11 +227,6 @@ const ItemCreate = () => {
                 alignItems: "center",
                 flexWrap: "wrap",
                 gap: "1rem",
-                // ".MuiInputBase-input": {
-                //   padding: ".25rem .5rem",
-                //   color: "white",
-                //   borderColor: "white",
-                // },
               }}
             >
               <TextField
@@ -274,7 +246,6 @@ const ItemCreate = () => {
               <TextField
                 sx={textFieldStyle}
                 id="input-price"
-                value={price === 0 ? "" : price}
                 onChange={handlePriceChange}
                 name="price"
                 type="number"
@@ -289,7 +260,6 @@ const ItemCreate = () => {
               <TextField
                 sx={textFieldStyle}
                 id="input-stock"
-                value={stock === 0 ? "" : stock}
                 onChange={handleStockChange}
                 name="stock"
                 type="number"
@@ -325,10 +295,15 @@ const ItemCreate = () => {
               </TextField>
             </Box>
           </DialogContent>
-          <DialogActions>
+          <DialogActions
+            sx={{ paddingRight: "2rem", paddingBottom: "1.75rem" }}
+          >
             <Button onClick={handleClose}>Cancel</Button>
             <Button
-              onClick={(e) => handleItemCreate(e)}
+              onClick={(e) => {
+                validate();
+                handleItemCreate(e);
+              }}
               color="reverse"
               variant="filled_primary"
               sx={{ "& .MuiButtonBase .Mui-disabled": { color: "red" } }}

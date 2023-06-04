@@ -9,19 +9,26 @@ import {
   TextField,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { useUpdateItemMutation } from "../../state/api";
+import { useNotification } from "../../hooks/useNotification";
 
 type Props = { itemId: string; currentName: string };
 
 const ItemUpdate = ({ itemId, currentName }: Props) => {
   const { palette } = useTheme();
-  const [updateTrigger] = useUpdateItemMutation();
+  const [updateTrigger, updateMutationState] = useUpdateItemMutation();
   const [showDialog, setShowDialog] = useState(false);
   const [name, setName] = useState(currentName);
   const [nameError, setNameError] = useState("");
-
+  const { initialNotification } = useNotification(
+    updateMutationState.isSuccess,
+    updateMutationState.isError,
+    updateMutationState.status,
+    updateMutationState.error,
+    updateMutationState.endpointName
+  );
   const textFieldStyle = {
     color: "white",
     // height: "fit-content",
@@ -57,6 +64,10 @@ const ItemUpdate = ({ itemId, currentName }: Props) => {
     "& .MuiSelect-iconOutlined": { fill: palette.basic.white },
   };
 
+  useEffect(() => {
+    if (updateMutationState.isSuccess) setShowDialog(false);
+  }, [updateMutationState]);
+
   const handleItemUpdate = () => {
     if (name === currentName) {
       setNameError("New name same as old one");
@@ -66,9 +77,8 @@ const ItemUpdate = ({ itemId, currentName }: Props) => {
       setNameError("Name can't be empty");
       return;
     }
-
+    initialNotification();
     updateTrigger({ _id: itemId, name: name });
-    setShowDialog(false);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,11 +135,6 @@ const ItemUpdate = ({ itemId, currentName }: Props) => {
               alignItems: "center",
               flexWrap: "wrap",
               gap: "1rem",
-              // ".MuiInputBase-input": {
-              //   padding: ".25rem .5rem",
-              //   color: "white",
-              //   borderColor: "white",
-              // },
             }}
           >
             <TextField
@@ -153,7 +158,8 @@ const ItemUpdate = ({ itemId, currentName }: Props) => {
           <Button onClick={handleClose}>Cancel</Button>
           <Button
             onClick={handleItemUpdate}
-            variant="outlined"
+            color="reverse"
+            variant="filled_primary"
             sx={{ "& .MuiButtonBase .Mui-disabled": { color: "red" } }}
           >
             Rename

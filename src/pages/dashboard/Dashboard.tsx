@@ -2,17 +2,13 @@ import { Box, useMediaQuery } from "@mui/material";
 import Row1 from "./Row1";
 import Row2 from "./Row2";
 import Row3 from "./Row3";
-import { AnimatePresence, motion } from "framer-motion";
-import { dashboardVariants } from "../../MotionVariants";
 import { useEffect, useState } from "react";
 import {
   useGetKpisQuery,
   useGetProductsQuery,
   useGetTransactionsQuery,
 } from "../../state/api";
-import { useGridEditing } from "@mui/x-data-grid/internals";
 import FullPageLoading from "../../components/FullPageLoading";
-import DashboardTransitionWrapper from "./DashboardTransitionWrapper";
 
 const gridTemplateLargeScreen = `
 "a b c"
@@ -62,8 +58,6 @@ const gridTemplateSmallScreens = `
 
 const Dashboard = () => {
   const isAboveMediumScreenWidth = useMediaQuery("(min-width: 1200px)");
-  const MotionBox = motion(Box, { forwardMotionProps: true });
-  // Fetching state, pass setter to children, default true, when fetched set as false - if no falses, render page
   const [dashboardDataFetched, setDashboardDataFetched] = useState(false);
   const initialDataLoadKpi = useGetKpisQuery();
   const initialDataLoadTransactions = useGetTransactionsQuery();

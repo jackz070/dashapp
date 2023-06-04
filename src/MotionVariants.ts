@@ -40,17 +40,18 @@ export const dashboardVariants = {
 
 export const itemsVariants = {
   initial: {
-    y: "-100vh",
+    x: "100vw",
   },
   final: {
-    y: "0vh",
+    x: "0vw",
+
     transition: {
       duration: 0.7,
       ease: "easeIn",
     },
   },
   exit: {
-    y: "100vw",
+    x: "-100vw",
     transition: {
       duration: 0.7,
       ease: "easeOut",

@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { themeSettings } from "./theme";
 import { Box, CssBaseline, ThemeOptions } from "@mui/material";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
@@ -24,7 +24,7 @@ function RoutesWithAnimation() {
           path="/"
           element={
             <DashboardTransitionWrapper>
-              <Dashboard location={location} />
+              <Dashboard />
             </DashboardTransitionWrapper>
           }
         />

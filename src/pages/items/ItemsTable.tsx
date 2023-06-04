@@ -4,18 +4,27 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ItemUpdate from "./ItemUpdate";
+import { useNotification } from "../../hooks/useNotification";
 
 const ItemsTable = () => {
   const hasNoHoverSupport = useMediaQuery("(hover: none)");
   const isAboveMediumScreenWidth = useMediaQuery("(max-width:960px)");
 
   const { palette } = useTheme();
-  const [hoveredRow, setHoveredRow] = useState(null);
+  const [hoveredRow, setHoveredRow] = useState<string | undefined>(undefined);
   // const [paginationModel, setPaginationModel] = useState({
   //   pageSize: 15,
   //   page: 0,
   // });
   const [deleteTrigger, deleteMutationState] = useDeleteItemMutation();
+
+  const { initialNotification } = useNotification(
+    deleteMutationState.isSuccess,
+    deleteMutationState.isError,
+    deleteMutationState.status,
+    deleteMutationState.error,
+    deleteMutationState.endpointName
+  );
 
   const gridColumns: GridColDef[] = [
     { field: "_id", headerName: "id" },
@@ -32,8 +41,10 @@ const ItemsTable = () => {
     { field: "category", headerName: "Category" },
     { field: "stock", headerName: "Stock", width: 80 },
     {
-      field: "update",
-      headerName: "",
+      field: "Tools",
+
+      disableColumnMenu: true,
+      renderHeader: () => null,
       renderCell: (params) =>
         (hoveredRow === params.id ||
           isAboveMediumScreenWidth ||
@@ -49,6 +60,7 @@ const ItemsTable = () => {
                 "&:hover": { color: palette.grey[300] },
               }}
               onClick={() => {
+                initialNotification();
                 deleteTrigger({ _id: params.id.toString() });
               }}
             >
@@ -88,6 +100,10 @@ const ItemsTable = () => {
           fill: palette.grey[500],
         },
         "& .MuiDataGrid-footerContainer > *": { color: palette.basic.white },
+        "& .MuiDataGrid-columnHeader:last-of-type .MuiDataGrid-columnSeparator--sideRight":
+          {
+            display: "none",
+          },
       }}
     >
       <DataGrid
@@ -95,15 +111,13 @@ const ItemsTable = () => {
         rowHeight={35}
         rows={data || []}
         columns={gridColumns}
-        // paginationModel={paginationModel}
-        // onPaginationModelChange={setPaginationModel}
         autoPageSize
         slotProps={{
           row: {
-            onMouseEnter: (e) => {
-              setHoveredRow(e.target?.parentNode?.dataset?.id);
+            onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => {
+              setHoveredRow((e.target as Element)?.parentElement?.dataset?.id);
             },
-            onMouseLeave: (e) => setHoveredRow(null),
+            onMouseLeave: () => setHoveredRow(undefined),
           },
         }}
       />
