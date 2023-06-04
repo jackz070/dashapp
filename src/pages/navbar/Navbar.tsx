@@ -18,7 +18,7 @@ const Navbar = () => {
       </FlexBetween>
 
       <FlexBetween gap="1.25rem">
-        <Box>
+        <Box sx={{ "&:hover": { color: palette.primary[600] } }}>
           <Link
             to="/"
             onClick={() => setSelected("dashboard")}
