@@ -24,7 +24,7 @@ const SettingsPageAccountField = ({ label, value, editable = true }: Props) => {
       {isEdited ? (
         <FormControl
           sx={{
-            width: "100px",
+            width: "250px",
             padding: "0",
             display: "flex",
             flexDirection: "row",
@@ -39,20 +39,28 @@ const SettingsPageAccountField = ({ label, value, editable = true }: Props) => {
               setEditableValue(event.target.value);
             }}
             sx={{
+              width: "200px",
               padding: "0",
               border: "none",
               "& 	.MuiInput-underline": { color: "red" },
             }}
           />
           <SaveIcon
-            sx={{ display: "inline", fill: palette.grey[500] }}
+            sx={{
+              display: "inline",
+              cursor: "pointer",
+              fill: palette.grey[300],
+              "&:hover": { fill: palette.grey[500] },
+            }}
             fontSize="small"
+            onClick={() => setIsEdited(false)}
           />
         </FormControl>
       ) : (
         <Typography
           fontSize="1rem"
           sx={{
+            width: "250px",
             fontWeight: "700",
             cursor: editable ? "pointer" : null,
             "&:hover>*": { visibility: "visible" },
@@ -72,7 +80,7 @@ const SettingsPageAccountField = ({ label, value, editable = true }: Props) => {
                   width: "16px",
                   marginBottom: "8px",
                   marginLeft: "1rem",
-                  "&:hover": { background: "none" },
+                  "&:hover": { background: "none", color: palette.grey[500] },
                 }}
               >
                 <EditIcon fontSize="small" />
